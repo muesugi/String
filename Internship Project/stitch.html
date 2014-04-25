@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<title> test </title>
+		<style>
+			canvas {width:50%;}
+		</style>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script type="text/javascript">
+			function start() { 
+			}
+			function processinput(){
+				input = $("#textarea").val();
+				input=input.replace(/\s+/g, '');
+				splitintofunctions = input.split(";");
+				if (input!==previousinput){
+					if (input.slice(-1)==";"){
+						//remove all objects if the last character is ;
+						for (var i = scene.children.length - 1; i >= 0 ; i -- ) {
+						    obj = scene.children[ i ];
+						    if (obj !== camera) {
+						        scene.remove(obj);
+						    }
+						}
+						currXPos = -2;
+						currYPos = 0;
+						for (var h=0;h<splitintofunctions.length-1;h++){ 
+							splitintoelements=splitintofunctions[h].split("(");
+							var lowercase=(splitintoelements[0]).toLowerCase();
+							argchars = splitintoelements[1];
+							iofpar = argchars.indexOf(")");
+							argstring = argchars.slice(0,iofpar);
+							argnumb=parseInt(argstring);
+							if (lowercase=="color"){
+								color(argnumb);
+							}
+							if ((lowercase=="chain")||(lowercase=="c")){
+								chain(argnumb);
+							}
+							if (lowercase=="sc"){
+								sc(argnumb);
+							}
+						}
+					}
+				}
+				previousinput = input;
+			}
+
+		</script>
+	</head>
+	<body onload = "start()">
+		<script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
+		<script src="mrdoob-three.js-8413a86/examples/js/controls/OrbitControls.js"></script>
+		<script>
+			var obj;
+			var previousinput = 0;
+			var input = 0;
+			var totalstitches = 0;
+			var backchainlasti=0;
+			var frontchainlasti=0;
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 1, 1000);
+			var geometry = new THREE.SphereGeometry(.16);
+			var material = new THREE.MeshBasicMaterial({color: 0xbd9893});	
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth,window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+			renderer.setClearColor( 0x000000, 1);
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			var currXPos = -2;
+			var currYPos = 0;
+			function color(hexnumber){
+				if (String(hexnumber).length!=6){
+					alert("Color value should be 6 characters long.");
+				}
+				else{
+					material = new THREE.MeshBasicMaterial({color: hexnumber});
+				}
+			};
+			function chain(numChains, chainWidth, chainHeight){
+				if (chainWidth === undefined) {
+    				chainWidth = 1;
+  				}
+  				if (chainHeight === undefined) {
+    				chainHeight = .5;
+  				}
+				for (var p=0;p<numChains;p++){
+					geometry = new THREE.SphereGeometry(.16);
+					geometry.applyMatrix( new THREE.Matrix4().makeScale(chainWidth,chainHeight,.5));
+
+					var backchain = new THREE.Mesh(geometry, material);
+					backchain.position.set(currXPos, currYPos, 0 );
+					backchain.rotation.y = .4*Math.PI/2;
+					scene.add(backchain);
+
+					var frontchain = new THREE.Mesh(geometry, material);
+					frontchain.position.set(currXPos, currYPos, 0.2 );
+					frontchain.rotation.y = 3.7*Math.PI/2;
+					scene.add(frontchain);
+					
+					currXPos = currXPos + .21;
+				}
+			}
+			function sc(numChains, chainWidth, chainHeight){
+				if (chainWidth === undefined) {
+    				chainWidth = 1;
+  				}
+  				if (chainHeight === undefined) {
+    				chainHeight = .5;
+  				}
+				for (var p=0;p<numChains;p++){
+					geometry = new THREE.SphereGeometry(.16);
+					geometry.applyMatrix( new THREE.Matrix4().makeScale(chainWidth,chainHeight,.5));
+
+					var backchain = new THREE.Mesh(geometry, material);
+					backchain.position.set(currXPos, currYPos, 0 );
+					backchain.rotation.y = .4*Math.PI/2;
+					scene.add(backchain);
+
+					var frontchain = new THREE.Mesh(geometry, material);
+					frontchain.position.set(currXPos, currYPos, 0.2 );
+					frontchain.rotation.y = 3.7*Math.PI/2;
+					scene.add(frontchain);
+
+					var twist1 = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0x23432f}));
+					twist1.position.set(currXPos+0.05, currYPos-0.1, 0 );
+					twist1.rotation.z = 1*Math.PI/2;
+					scene.add(twist1);
+
+					var twist2 = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: 0x23432f}));
+					twist2.position.set(currXPos-0.05, currYPos-0.1, 0 );
+					twist2.rotation.z = -1*Math.PI/2;
+					scene.add(twist2);
+					
+					currXPos = currXPos + .21;
+				}
+			}
+			camera.position.z = 5;
+			
+			var render = function () {
+				requestAnimationFrame(render);
+
+				 //upperchain.rotation.z += .1;
+				 //lowerchain.rotation.z += .1;
+				
+
+				renderer.render(scene, camera);
+			};
+
+			render();
+		</script>
+		<canvas id='canvas1'></canvas>
+		<textarea id="textarea" spellcheck=false onkeyup='processinput()'></textarea>
+	</body>
+</html>

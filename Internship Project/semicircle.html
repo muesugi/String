@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title> test </title>
+		<style>
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
+
+			var geometry = new THREE.SphereGeometry(.2,8,6,0,Math.PI);
+			var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+			var firstsphere = new THREE.Mesh(geometry, material);
+			scene.add(firstsphere);
+
+			var group = new THREE.Object3D();
+				group.position.y = 50;
+				scene.add( group );
+
+			var smileyShape = new THREE.Shape();
+				smileyShape.moveTo( 80, 40 );
+				smileyShape.absarc( 40, 40, 40, 0, Math.PI*2, false );
+			var smileyMouthPath = new THREE.Path();
+
+				smileyMouthPath.moveTo( 20, 40 );
+				smileyMouthPath.quadraticCurveTo( 40, 60, 60, 40 );
+				smileyMouthPath.bezierCurveTo( 70, 45, 70, 50, 60, 60 );
+				smileyMouthPath.quadraticCurveTo( 40, 80, 20, 60 );
+				smileyMouthPath.quadraticCurveTo( 5, 50, 20, 40 );
+
+	smileyShape.holes.push( smileyMouthPath );
+
+			var extrudeSettings = { amount: 20 }; // bevelSegments: 2, steps: 2 , bevelSegments: 5, bevelSize: 8, bevelThickness:5
+			addShape( smileyShape, extrudeSettings, 0xee00ff, -200, 250, 0, 0, 0, Math.PI, 1 );
+
+			camera.position.z = 5;
+
+			var render = function () {
+				requestAnimationFrame(render);
+
+				firstsphere.rotation.x += 0.1;
+				firstsphere.rotation.y += 0.1;
+
+				renderer.render(scene, camera);
+			};
+
+			render();
+
+			function addShape( shape, extrudeSettings, color, x, y, z, rx, ry, rz, s ) {
+
+					var points = shape.createPointsGeometry();
+					var spacedPoints = shape.createSpacedPointsGeometry( 100 );
+
+					// flat shape
+
+					var geometry = new THREE.ShapeGeometry( shape );
+
+					var mesh = THREE.SceneUtils.createMultiMaterialObject( geometry, [ new THREE.MeshLambertMaterial( { color: color } ), new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ] );
+					mesh.position.set( x, y, z - 125 );
+					mesh.rotation.set( rx, ry, rz );
+					mesh.scale.set( s, s, s );
+					group.add( mesh );
+
+					// 3d shape
+
+					var geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+
+					var mesh = THREE.SceneUtils.createMultiMaterialObject( geometry, [ new THREE.MeshLambertMaterial( { color: color } ), new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ) ] );
+					mesh.position.set( x, y, z - 75 );
+					mesh.rotation.set( rx, ry, rz );
+					mesh.scale.set( s, s, s );
+					group.add( mesh );
+
+					// solid line
+
+					var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, linewidth: 2 } ) );
+					line.position.set( x, y, z + 25 );
+					line.rotation.set( rx, ry, rz );
+					line.scale.set( s, s, s );
+					group.add( line );
+
+					// transparent line from real points
+
+					var line = new THREE.Line( points, new THREE.LineBasicMaterial( { color: color, opacity: 0.5 } ) );
+					line.position.set( x, y, z + 75 );
+					line.rotation.set( rx, ry, rz );
+					line.scale.set( s, s, s );
+					group.add( line );
+
+					// vertices from real points
+
+					var pgeo = points.clone();
+					var particles = new THREE.ParticleSystem( pgeo, new THREE.ParticleSystemMaterial( { color: color, size: 2, opacity: 0.75 } ) );
+					particles.position.set( x, y, z + 75 );
+					particles.rotation.set( rx, ry, rz );
+					particles.scale.set( s, s, s );
+					group.add( particles );
+
+					// transparent line from equidistance sampled points
+
+					var line = new THREE.Line( spacedPoints, new THREE.LineBasicMaterial( { color: color, opacity: 0.2 } ) );
+					line.position.set( x, y, z + 125 );
+					line.rotation.set( rx, ry, rz );
+					line.scale.set( s, s, s );
+					group.add( line );
+
+					// equidistance sampled points
+
+					var pgeo = spacedPoints.clone();
+					var particles2 = new THREE.ParticleSystem( pgeo, new THREE.ParticleSystemMaterial( { color: color, size: 2, opacity: 0.5 } ) );
+					particles2.position.set( x, y, z + 125 );
+					particles2.rotation.set( rx, ry, rz );
+					particles2.scale.set( s, s, s );
+					group.add( particles2 );
+
+				}
+		</script>
+	</body>
+</html>
