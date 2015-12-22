@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>String</title>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<!--link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>-->
+<!--<link href='http://fonts.googleapis.com/css?family=Port+Lligat+Slab' rel='stylesheet' type='text/css'>-->
+<link href='http://fonts.googleapis.com/css?family=Neucha' rel='stylesheet' type='text/css'>
+<script src="canvg.js"></script>
+<!--<link href="http://select-box.googlecode.com/svn/tags/0.2/jquery.selectbox.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://select-box.googlecode.com/svn/tags/0.2/jquery.selectbox-0.2.min.js"></script>-->
+<!--<script src="https://github.com/jweir/colorwheel.git"></script>-->
+<script type="text/javascript">
+function start() { 
+    var paper1 = Raphael(document.getElementById('container1'), "100%", "100%");  //creates the canvas. 100% of 50% of window size
+	var widthmeasurement1 = "inch";
+	var heightmeasurement1 = "inch";
+	
+	var paragraphheight1 = $("#textarea1").height();
+			var numberoflines1 = paragraphheight1/16;
+				for (k=1;k<numberoflines1+1;k++){
+					$("#olnumbers1").append("<li>"+k+"</li>");
+				};
+				
+	var xpos1 = 200;
+	var xposoriginal1= xpos1;
+	var ypos1 = 300;
+	var yposoriginal1 = ypos1;
+	var patternwidth1 = 0;
+	
+	$("#helplink").hover(
+		function(){
+			$(".uparrowdiv").slideDown();
+			//$("#helpcontent").slideDown();
+		}, 
+		function(){
+			$(".uparrowdiv").slideUp();
+			//$("#helpcontent").slideUp();
+		}
+	);
+	
+	
+	var xposrowbegin1 = xpos1;
+	var prevxposrowbegin1 = 0;
+	//var xposrowend = 0;
+	
+	var yposrowbegin1 = ypos1;
+	var prevyposrowbegin1 = 0;
+	//var yposrowend = 0;
+	
+	var zoomamount1 = 0;
+	
+	
+	var rows1 = 0;
+	var rowbeginstitch1 = 0;
+	var rowtotal1 = 0;
+	var width1 = 14.2857143;
+	var height1 = 5;
+	var chaintop1 = 0;
+	var direction1 = 1;
+	var topchains1=[];
+	var chainbottom1 = 0;
+	var bottomchains1=[];
+	var laststitch1 = "none";
+	var justturned1 = "false";
+	var currshade1 = "#f00";
+	
+	
+	
+	function chain(chainnumb1){
+		
+			if (laststitch1!=="chains"){
+				ypos1=ypos1-18;
+				if (laststitch1=="dcs"){
+					ypos1=ypos1-18;
+				}
+				if (laststitch1=="tcs"){
+					ypos1=ypos1-33;
+				}
+			}
+			
+			
+		for(i=0; i<chainnumb1; i++){
+			if (justturned1=="true"){
+				rowbeginstitch1 = "chain";
+				prevxposrowbegin1 = xposrowbegin1;
+				prevyposrowbegin1 = yposrowbegin1;
+				xposrowbegin1 = xpos1;
+				yposrowbegin1 = ypos1;
+				rowtotal1 = 0;
+			}
+			
+			chainbottom1 = paper1.ellipse(xpos1, ypos1, width1, height1);
+			chainbottom1.transform("r"+direction1*"25"+"t"+direction1*"4"+",11");
+			if (laststitch1!=="chains"){
+				if (justturned1=="false"){
+					chainbottom1.toFront();
+				}
+			}
+			else{chainbottom1.toBack();}
+			chainbottom1.attr({fill: currshade1});
+			bottomchains1.push(chainbottom1);
+			if (rows1==0){
+				chaintop1 = paper1.ellipse(xpos1, ypos1, width1, height1);
+				chaintop1.transform("r"+direction1*"-25");
+				chaintop1.attr({fill: currshade1});
+				if (laststitch1!=="chains"){
+					if (justturned1=="false"){
+						chaintop1.toFront();
+					}
+				}
+				else{chaintop1.toBack();}
+				topchains1.push(chaintop1)
+			}
+			
+			rowtotal1=rowtotal1+1;
+			xpos1 = xpos1+(direction1*17);
+			laststitch1="chains";
+			justturned1 = "false";
+		}
+		patternwidth1=chainnumb1*.676666666666666667;
+		if (widthmeasurement1=="cm"){
+			$("#widthtext1").html("width: "+Math.round(patternwidth1* 100) / 100+" cm");
+			//widthtext=paper.text(xposoriginal+30,yposoriginal+25,"width: "+Math.round(patternwidth * 100) / 100+" cm");
+		}
+		else if (widthmeasurement1=="inch"){
+			$("#widthtext1").html("width: "+Math.round((patternwidth1*0.393700787402)*100) / 100+" inches");
+			//widthtext=paper.text(xposoriginal+30,yposoriginal+25,"width: "+Math.round(patternwidth * 100) / 100+" cm");
+		}
+		patternheight1=patternheight1+.7;
+		if (heightmeasurement1=="cm"){
+			$("#heighttext1").html("height: "+Math.round(patternheight1* 100) / 100+" cm");
+		}
+		else if (heightmeasurement1=="inch"){
+			$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	function turn(){
+		/*x=document.getElementById('calledfuncs');
+		x.innerHTML=x.innerHTML+"turn."+"<br>";*/
+		/*reset numbers on the side
+			$("#ulnumbers").html('');
+			for (i=1;i<numberoflines+1;i++){
+				$("#ulnumbers").append("<li>"+i+"</li>");
+			}*/
+			
+		rowtotal1 = 0;
+		if (laststitch1==="chains"){
+			ypos1=ypos1;
+		}
+		if (laststitch1==="scs"){
+			ypos1=ypos1-20;
+		}
+		if (laststitch1==="hdcs"){
+			ypos1=ypos1-23;
+		}
+		if (laststitch1==="dcs"){
+			ypos1=ypos1-41;
+		}
+		if (laststitch1==="tcs"){
+			ypos1=ypos1-56;
+		}
+		//xposrowend=xpos;
+		//yposrowend=ypos;
+		xpos1 = xpos1-(direction1*17);
+		direction1 = -1*direction1;
+		justturned1 = "true";
+		rows1 = rows1+1;
+	}
+	var scchain11 = 0;
+	var scchain21 = 0;
+	var scupperchains1 = [];
+	var sclowerchains1 = [];
+	var leftsclist1=[];
+	var rightsclist1=[];
+	var scleft1 = 0;
+	var scright1 = 0;
+	function sc(scnumb1){
+		if (justturned1 == "false"){
+			if ((laststitch1!=="scs")&&(laststitch1 !== "chains")){
+				ypos1=ypos1+7;
+			}
+			if (laststitch1=="chains"){
+				ypos1=prevyposrowbegin1-40;
+			}
+		}
+		if (justturned1 == "true"){
+			if (laststitch1==="scs"){
+				ypos1=ypos1+3;
+			}
+			if (laststitch1==="hdcs"){
+				ypos1=ypos1+3;
+			}
+			if (laststitch1==="dcs"){
+				ypos1=ypos1+3;
+			}
+			if (laststitch1==="tcs"){
+				ypos1=ypos1+3;
+			}
+		}
+		
+		for(i=0; i<scnumb1; i++){
+			if (justturned1=="true"){
+				rowbeginstitch1 = "sc";
+				rowtotal1 = 0;
+				prevxposrowbegin1 = xposrowbegin1;
+				prevyposrowbegin1 = yposrowbegin1;
+				xposrowbegin1 = xpos1;
+				yposrowbegin1= ypos1;
+			}
+			scleft1 = paper1.ellipse(xpos1+4, ypos1, width1-7.8, height1);
+			scleft1.transform("r"+direction1*"-60");
+			scleft1.attr({fill: currshade1});
+			leftsclist1.push(scleft1);
+			
+			scright1 = paper1.ellipse(xpos1-4, ypos1, width1-7.8, height1);
+			scright1.transform("r"+direction1*"-120");
+			scright1.attr({fill: currshade1});
+			rightsclist1.push(scright1);
+			
+			scchain11 = paper1.ellipse(xpos1, ypos1-6.2, width1, height1-.5);
+			scchain11.transform("r"+direction1*"25");
+			scchain11.attr({fill: currshade1});
+			sclowerchains1.push(scchain1);
+			
+			/*scchain21 = paper.ellipse(xpos1, ypos1-16.2, width1, height1-.5);
+			scchain21.transform("r"+direction1*"-25");
+			scchain21.attr({fill: currshade1});
+			scchain21.toBack();
+			scupperchains1.push(scchain21);*/
+
+			xpos1 = xpos1+(direction1*17);
+			rowtotal1=rowtotal1+1;
+			laststitch1="scs";
+			justturned1 = "false";
+			
+		}
+		patternheight1=patternheight1+.85-.35;
+		if (heightmeasurement1=="cm"){
+			$("#heighttext1").html("height: "+Math.round(patternheight1* 100) / 100+" cm");
+		}
+		else if (heightmeasurement1=="inch"){
+			$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	var hdcchain11 = 0;
+	var hdcchain21 = 0;
+	var hdcupperchains1 = [];
+	var hdclowerchains1 = [];
+	var lefthdclist1=[];
+	var righthdclist1=[];
+	var hdcleft1 = 0;
+	var hdcright1 = 0;
+	function hdc(hdcnumb1){
+		if (justturned1 == "true"){
+			if (laststitch1=="chains"){
+				ypos1=ypos1-7;
+			}
+		}
+		
+		if (justturned1 == "false"){
+			if (laststitch1=="chains"){
+				ypos1=prevyposrowbegin1-23;
+			}
+			if (laststitch1=="scs"){
+				ypos1=ypos1-7;
+			}
+		}
+		
+		
+		
+		for(i=0; i<hdcnumb1; i++){
+			if (justturned1=="true"){
+				rowbeginstitch1 = "hdc";
+				rowtotal1 = 0;
+				prevxposrowbegin1 = xposrowbegin1;
+				prevyposrowbegin1= yposrowbegin1;
+				xposrowbegin1 = xpos1;
+				yposrowbegin1= ypos1;
+			}
+			hdcleft1 = paper1.ellipse(xpos1+4, ypos1, width1-2, height1);
+			hdcleft1.transform("r"+direction1*"-60");
+			hdcleft1.attr({fill:currshade1});
+			lefthdclist1.push(hdcleft1);
+			
+			hdcright1 = paper1.ellipse(xpos1-4, ypos1, width1-2, height1);
+			hdcright1.transform("r"+direction1*"-120");
+			hdcright1.attr({fill: currshade1});
+			righthdclist1.push(hdcright1);
+			
+			hdcchain1 = paper1.ellipse(xpos1, ypos1-7, width1, height1);
+			hdcchain1.transform("r"+direction1*"25");
+			hdcchain1.attr({fill: currshade1});
+			hdclowerchains1.push(hdcchain1);
+			
+			/*hdcchain2 = paper.ellipse(xpos, ypos-7, width, height);
+			hdcchain2.transform("r"+direction*"-25");
+			hdcchain2.attr({fill: "#f00"});
+			hdcchain2.toBack();
+			hdcupperchains.push(hdcchain2);*/
+
+			xpos1 = xpos1+(direction1*17);
+			rowtotal1=rowtotal1+1;
+			laststitch1="hdcs";
+			justturned1 = "false";
+			
+		}
+		patternheight1=patternheight1+.95-.35;
+		if (heightmeasurement1=="cm"){
+			$("#heighttext1").html("height: "+Math.round(patternheight1* 100) / 100+" cm");
+		}
+		else if (heightmeasurement1=="inch"){
+			$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100)/ 100+" inches");
+		}
+
+	}
+	
+	var dcchain11 = 0;
+	var dcchain21 = 0;
+	var dcchain3back1 = 0;
+	var dcupperchains1 = [];
+	var dclowerchains1 = [];
+	var leftdclist11=[];
+	var rightdclist11=[];
+	var leftdclist21=[];
+	var rightdclist21=[];
+	var dcleft11 = 0;
+	var dcright11 = 0;
+	var dcleft21 = 0;
+	var dcright21 = 0;
+	function dc(dcnumb1){
+		if (justturned1 == "true"){
+			if(laststitch1=="chains"){
+				ypos1=ypos1-7;
+			}
+		}
+		if (justturned1 == "false"){
+			if (laststitch1=="chains"){
+				ypos1=prevyposrowbegin1-43;
+			}
+			if (laststitch1=="scs"){
+				ypos1=ypos1-7;
+			}
+		}
+		
+		for(i=0; i<dcnumb1; i++){
+			if (justturned1=="true"){
+				rowbeginstitch1 = "dc";
+				rowtotal1 = 0;
+				prevxposrowbegin1 = xposrowbegin1;
+				prevyposrowbegin1 = yposrowbegin1;
+				xposrowbegin1 = xpos1;
+				yposrowbegin1 = ypos1;
+			}
+			dcleft11 = paper1.ellipse(xpos1+4, ypos1, 1.25*(width1-4), height1);
+			dcleft11.transform("r-60");
+			dcleft11.attr({fill: currshade1});
+			leftdclist11.push(dcleft11);
+			
+			dcright11 = paper1.ellipse(xpos1-4, ypos1, 1.25*(width1-4), height1);
+			dcright11.transform("r-120");
+			dcright11.attr({fill: currshade1});
+			rightdclist11.push(dcright11);
+			
+			dcleft21 = paper1.ellipse(xpos1+4, ypos1-15, 1.25*(width1-4), height1);
+			dcleft21.transform("r-60");
+			dcleft21.attr({fill: currshade1});
+			leftdclist21.push(dcleft21);
+			
+			dcright21 = paper1.ellipse(xpos1-4, ypos1-15, 1.25*(width1-4), height1);
+			dcright21.transform("r-120");
+			dcright21.attr({fill: currshade1});
+			rightdclist21.push(dcright21);
+			
+			dcchain11 = paper1.ellipse(xpos1, ypos1-25, width1, height1);
+			dcchain11.transform("r"+direction1*"25");
+			dcchain11.attr({fill: currshade1});
+			dcchain11.toFront();
+			dclowerchains1.push(dcchain11);
+			
+			/*dcchain2 = paper.ellipse(xpos, ypos-35, width, height);
+			dcchain2.transform("r"+direction*"-25");
+			dcchain2.attr({fill: currshade});
+			dcchain2.toBack();
+			dcupperchains.push(dcchain2);*/
+
+			xpos1 = xpos1+(direction1*17);
+			rowtotal1=rowtotal1+1;
+			laststitch1="dcs";
+			justturned1= "false";
+		}
+		patternheight1=patternheight1+1.35-.35;
+		if (heightmeasurement1=="cm"){
+			$("#heighttext1").html("height: "+Math.round(patternheight1* 100) / 100+" cm");
+		}
+		else if (heightmeasurement1=="inch"){
+			$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	var tcchain11 = 0;
+	var tcchain21 = 0;
+	var tcupperchains1 = [];
+	var tclowerchains1 = [];
+	var lefttclist11=[];
+	var righttclist11=[];
+	var lefttclist21=[];
+	var righttclist21=[];
+	var lefttclist31=[];
+	var righttclist31=[];
+	var tcleft11 = 0;
+	var tcright11 = 0;
+	var tcleft21 = 0;
+	var tcright21 = 0;
+	var tcleft31 = 0;
+	var tcright31 = 0;
+	function tc(tcnumb1){
+		if (justturned1 == "true"){
+			if(laststitch1=="chains"){
+			ypos1=ypos1-7;
+			}
+		}
+		if (justturned1 == "false"){
+			if (laststitch1=="chains"){
+				ypos1=ypos1+51;
+				ypos1=prevyposrowbegin1-23;
+			}
+			if (laststitch1=="scs"){
+				ypos1=ypos1-7.5;
+			}
+		}
+		
+		for(i=0; i<tcnumb1; i++){
+			if (justturned1=="true"){
+				rowbeginstitch1 = "tc";
+				rowtotal1 = 0;
+				prevxposrowbegin1 = xposrowbegin1;
+				prevyposrowbegin1 = yposrowbegin1;
+				xposrowbegin1 = xpos1;
+				yposrowbegin1 = ypos1;
+			}
+			tcleft11 = paper1.ellipse(xpos1+4, ypos1, 1.25*(width1-4), height1);
+			tcleft11.transform("r-60");
+			tcleft11.attr({fill: currshade1});
+			lefttclist11.push(tcleft11);
+			
+			tcright11 = paper1.ellipse(xpos1-4, ypos1, 1.25*(width1-4), height1);
+			tcright11.transform("r-120");
+			tcright11.attr({fill: currshade1});
+			righttclist11.push(tcright11);
+			
+			tcleft21 = paper1.ellipse(xpos1+4, ypos1-15, 1.25*(width1-4), height1);
+			tcleft21.transform("r-60");
+			tcleft21.attr({fill: currshade1});
+			lefttclist21.push(tcleft21);
+			
+			tcright21 = paper1.ellipse(xpos1-4, ypos1-15, 1.25*(width1-4), height1);
+			tcright21.transform("r-120");
+			tcright21.attr({fill: currshade1});
+			righttclist21.push(tcright21);
+			
+			tcleft31 = paper1.ellipse(xpos1+4, ypos1-30, 1.25*(width1-4), height1);
+			tcleft31.transform("r-60");
+			tcleft31.attr({fill: currshade1});
+			lefttclist31.push(tcleft31);
+			
+			tcright31 = paper1.ellipse(xpos1-4, ypos1-30, 1.25*(width1-4), height1);
+			tcright31.transform("r-120");
+			tcright31.attr({fill: currshade1});
+			righttclist31.push(tcright31);
+			
+			tcchain11 = paper1.ellipse(xpos1, ypos1-40, width1, height1);
+			tcchain11.transform("r"+direction1*"25");
+			tcchain11.attr({fill: currshade1});
+			tcchain11.toFront();
+			tclowerchains1.push(tcchain11);
+			
+			/*tcchain2 = paper.ellipse(xpos, ypos-50, width, height);
+			tcchain2.transform("r"+direction*"-25");
+			tcchain2.attr({fill: currshade1});
+			tcchain2.toBack();
+			tcupperchains.push(tcchain2);*/
+
+			xpos1 = xpos1+(direction1*17);
+			rowtotal1=rowtotal1+1;
+			laststitch1="tcs";
+			justturned1 = "false";
+		}
+		patternheight1=patternheight1+2.05-.35;
+		if (heightmeasurement1=="cm"){
+			$("#heighttext1").html("height: "+Math.round(patternheight1* 100) / 100+" cm");
+		}
+		else if (heightmeasurement1=="inch"){
+			$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	/*
+	var buttonforchains = document.getElementById('numberofchains');
+	buttonforchains.onblur=function(){
+			chain($("#numberofchains").val());
+		};
+		
+	var buttonforturns = document.getElementById('turnbutton');
+	buttonforturns.onclick=function(){
+			turn();
+		}
+		
+	var buttonforscs = document.getElementById('numberofscs');
+	buttonforscs.onblur=function(){
+			sc($("#numberofscs").val());
+		}
+	*/
+	function color(colortype1){
+		currshade1=colortype1;
+	
+	}
+	var input1 = 0;
+	var splitintofunctions1 = 0;
+	var splitintoelements1 = 0;
+	var argchars1 = 0;
+	var argstring1 = 0;
+	var argnumb1 = 0;
+	var iofpar1 = 0;
+	var funcname1 = 0;
+	$("#textarea1").keypress(
+		function(){
+			//alert(patternheight);
+			//widthtext = paper.text(xposoriginal+20, yposoriginal+60, patternwidth+" inches");
+			//heighttext = paper.text(xposoriginal+30,yposoriginal+35,"");
+			processinput();
+		}
+	);
+	$("#textarea1").change(
+		function(){
+			//alert(patternheight);
+			//heighttext = paper.text(xposoriginal+30,yposoriginal+35,"");
+			processinput();
+		}
+	);
+		function processinput(){
+			xpos1 = xposoriginal1;
+			ypos1 = yposoriginal1;
+			patternheight1=0;
+			//widthtext = paper.text(xposoriginal+20, yposoriginal+60, patternwidth+" inches");
+			$('#converted_image1').attr('src', ""); //resets the image source
+			paragraphheight1 = $("#textarea1").height();
+			if (paragraphheight1/16>numberoflines1){
+				$("#olnumbers1").html("");
+				numberoflines1 = paragraphheight1/16;
+				for (k=1;k<numberoflines1+1;k++){
+					$("#olnumbers1").append("<li>"+k+"</li>");
+				};
+			}
+		
+			var scrtextarea1 = $("#textarea1").scrollTop();
+			$("#numbers1").scrollTop(scrtextarea1);
+			paper1.clear();//redraw every time
+			input1 = $("#textarea1").val();
+			input1=input1.replace("\n","");
+			input1=input1.replace("\n\r","");
+			input1=input1.replace("\\\n","");
+			input1=input1.replace("\r\n","");
+			input1=input1.replace("<br/>","");
+			input1=input1.replace(" ","");
+			splitintofunctions1 = input1.split(";");
+			
+			if (splitintofunctions1.length>60){
+				ypos1 = splitintofunctions1.length*9;
+			}
+			rowtotal1 = 0;
+			rows1 = 0;
+			currshade1 = "red";
+		
+			for (h=0;h<splitintofunctions1.length;h++){ 
+				
+				splitintoelements1=splitintofunctions1[h].split("(");
+				var lowercase1=(splitintoelements1[0]).toLowerCase();
+				
+				argchars1 = splitintoelements1[1];
+				iofpar1 = argchars1.indexOf(")");
+				argstring1 = argchars1.slice(0,iofpar1);
+				argnumb1=Number(argstring1);
+				if ((lowercase1=="chain")||(lowercase1=="c")){
+					chain(argnumb1);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if (lowercase1=="turn"){
+					turn();
+				}
+				
+				
+				//US terms
+				else if ((lowercase1=="sc")||(lowercase1=="single")||(lowercase1=="singlec")){
+					sc(argnumb1);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase1=="hdc")||(lowercase1=="halfdouble")||(lowercase1=="halfdoublec")){
+					hdc(argnumb1);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				
+				else if ((lowercase1=="dc")||(lowercase1=="double")||(lowercase1=="doublec")){
+					dc(argnumb1);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase1=="tc")||(lowercase1=="triple")||(lowercase1=="triplec")){
+					tc(argnumb1);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase1=="tr")||(lowercase1=="trc")||(lowercase1=="treble")||(lowercase1=="treblec")){
+					tc(argnumb1);
+				}
+				
+				//uk terms
+				else if ((lowercase1=="uk-dc")||(lowercase1=="uk-double")||(lowercase1=="uk-doublec")){
+					sc(argnumb1);
+				}
+				else if ((lowercase1=="ukdc")||(lowercase1=="ukdouble")||(lowercase1=="ukdoublec")){
+					sc(argnumb1);
+				}
+				
+				
+				else if ((lowercase1=="uk-htr")||(lowercase1=="uk-halftreble")||(lowercase1=="uk-halftreblec")){
+					hdc(argnumb1);
+				}
+				else if ((lowercase1=="uk-tr")||(lowercase1=="ukhalftreble")||(lowercase1=="ukhalftreblec")){
+					hdc(argnumb1);
+				}
+				
+				
+				else if ((lowercase1=="uk-tr")||(lowercase1=="uk-trc")||(lowercase1=="uk-treble")||(lowercase1=="uk-treblec")){
+					dc(argnumb1);
+				}
+				else if ((lowercase1=="uktr")||(lowercase1=="uktrc")||(lowercase1=="uktreble")||(lowercase1=="uktreblec")){
+					dc(argnumb1);
+				}
+
+
+				else if ((lowercase1=="uk-dtr")||(lowercase1=="uk-doubletreble")||(lowercase1=="uk-doubletr")||(lowercase1=="uk-doubletreblec")){
+					tc(argnumb1);
+				}
+				else if ((lowercase1=="ukdtr")||(lowercase1=="ukdoubletreble")||(lowercase1=="ukdoubletr")||(lowercase1=="ukdoubletreblec")){
+					tc(argnumb1);
+				}
+				
+				else if (lowercase1=="color"){ //without "else", the whole color changes. With else, it only changes from that moment on.
+					color(argstring1);
+				}
+			}
+			//adds the canvas contents to the hidden image.
+			canvg('canvas1', $("#container1").html());
+			// the canvas calls to output a png
+			var canvas1 = document.getElementById("canvas1");
+			var img1 = canvas1.toDataURL("image/png");
+			$('#converted_image1').attr('src', img1);
+		}
+	
+	$("#widthtext1").click(
+		function(){
+			if (widthmeasurement1 == "cm"){
+				widthmeasurement1 = "inch";
+				$("#widthtext1").html("width: "+Math.round((patternwidth1*0.393700787402)*100) / 100+" inches");
+			}
+			else if (widthmeasurement1 == "inch"){
+				widthmeasurement1 = "cm";
+				$("#widthtext1").html("width: "+Math.round(patternwidth1*100) / 100+" cm");
+			}
+		}
+	);
+	$("#heighttext1").click(
+		function(){
+			if (heightmeasurement1 == "cm"){
+				heightmeasurement1 = "inch";
+				$("#heighttext1").html("height: "+Math.round((patternheight1*0.393700787402)*100) / 100+" inches");
+			}
+			else if (heightmeasurement1 == "inch"){
+				heightmeasurement1 = "cm";
+				$("#heighttext1").html("height: "+Math.round(patternheight1*100) / 100+" cm");
+			}
+		}
+	);
+	if (widthmeasurement1=="cm"){
+		$("#widthtext1").html("width: "+patternwidth1+" cm");
+	}
+	else if (widthmeasurement1=="inch"){
+		$("#widthtext1").html("width: "+patternwidth1*0.393700787402+" inches");
+	}
+	var patternheight1 = 0;
+	if (heightmeasurement1=="cm"){
+		$("#heighttext1").html("height: "+patternheight1+" cm");
+	}
+	else if (heightmeasurement1=="inch"){
+		$("#heighttext1").html("height: "+patternheight1*0.393700787402+" inches");
+	}
+	
+	$("#zoom1").click(
+		function(){
+			if ((zoomamount1>=-1)&&(zoomamount1<1)){
+				zoomamount1 = zoomamount1+1;
+				alert(zoomamount1);
+			}
+		}
+	);
+	
+	$("#unzoom1").click(
+		function unzoom(){
+			if ((zoomamount1>-1)&&(zoomamount1<=1)){
+				zoomamount1 = zoomamount1-1;
+				alert(zoomamount1);
+			}
+		}
+	);	
+	if (zoomamount1==0){
+		paper1.setViewBox(0,0,650,650,false);
+	}
+	if (zoomamount1==1){
+		paper1.setViewBox(xpos1-200,xpos1-200,400,400,false);
+	}
+	/*if (zoomamount1==2){
+		paper1.setViewBox(xpos1-75,ypos1-75,150,150,false);
+	}
+	
+	*/if (zoomamount1==-1){
+		paper1.setViewBox(xpos1-450,xpos1-450,900,900,false);
+	}
+	/*if (zoomamount1==-2){
+		paper1.setViewBox(0,0,1150,1150,false);
+	}*/
+
+		/*$("#save").click(function() {
+
+		canvg('canvas', $("#container").html());
+
+		// the canvas calls to output a png
+		var canvas = document.getElementById("canvas");
+		var img = canvas.toDataURL("image/png");
+		// do what you want with the base64, write to screen, post to server, etc...
+		});	*/
+}
+</script>
+<style>
+
+	body{
+		background-color:#77534e;
+		padding:0;
+		
+		
+	}
+	#title{
+		width:100%;
+		text-align:center;
+		margin-top:-.5%;
+		margin-left:-.5%;
+		padding-top:12px;
+		padding-bottom:5px;
+		padding-right:1%;
+		background-color:#90a798;
+		color:#415167;
+		font-size:46px;
+		font-style: bold;
+		font-family: 'Neucha', cursive;
+	}
+	
+	#menubar{
+		border-top:5px solid #ede4d2;
+		font-family: 'Neucha', cursive;
+		background-color:#572a1f;
+		margin-left:-.5%;
+		padding-right:1%;
+		width:100%;
+		height:40px;
+	}
+	.container{
+		float:left;
+		width:50%;
+		height:1000px;
+		margin-left:8%;
+		margin-top:-23%;
+	}
+	
+	.textarea{
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		padding:1%;
+		margin-top:-13.5%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		width:30%; 
+		height:400px;
+		z-index:2;
+	}
+	.textarea::-webkit-input-placeholder {
+		color: #e8cfa2;
+	}
+	.textarea:-moz-placeholder {
+		color: #e8cfa2;
+	}
+	.textarea:-ms-input-placeholder { /* IE10+ */
+		color: #e8cfa2;
+	}
+	.menubaritems{
+		font-family: 'Neucha', cursive;
+		color:#dbb36b;
+		font-size:18px;
+		width:auto;
+		position:absolute;
+		height:30px;
+		padding-top:10px;
+		padding-left:.9%;
+		padding-right:.9%;
+	}
+
+	a:link {text-decoration:none;}
+	a:visited {text-decoration:none;}
+	a:hover {text-decoration:none;}
+	a:active {text-decoration:none;}
+	
+	#helplink{
+		margin-left:94.2%;
+		margin-top:-.000005%;
+	}
+	
+	#stringlink{
+		margin-left:3%;
+		
+	}
+	
+	#exampleslink{
+		margin-left:9.5%;
+		background-color:#703628;
+	}
+	
+	/*.helpcontent{
+		position:absolute;
+		font-family: 'Neucha', cursive;
+		background-color: #CDC5BF;
+		color:#2d3848;
+		margin-left:1%;
+		margin-top:1%;
+		width:15%;
+		height:300px;
+		display:none;
+		z-index:1;
+	}
+	*/
+	.uparrowdiv{
+		float:right;
+		right:10px;
+		margin-top:5px;
+		width:250px;
+		min-height:40px; /*min height of DIV should be set to at least 2x the width of the arrow*/
+		background: #CDC5BF;
+		color:#2d3848;
+		padding:5px;
+		position:absolute;
+		word-wrap:break-word;
+		-moz-border-radius:5px; /*add some nice CSS3 round corners*/
+		-webkit-border-radius:5px;
+		border-radius:5px;
+		margin-bottom:2em;
+		z-index:1;
+	}
+
+	.uparrowdiv:after{ /*arrow added to uparrowdiv DIV*/
+		content:'';
+		display:block;
+		position:absolute;
+		top:-20px; /*should be set to -border-width x 2 */
+		right:30px;
+		width:0;
+		height:0;
+		border-color: transparent transparent #CDC5BF transparent; /*border color should be same as div div background color*/
+		border-style: solid;
+		border-width: 10px;
+	}
+	
+	.button{
+		float:left;
+		height:auto;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:3%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#numberofchains{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	
+	#numberofscs{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#chainbutton{
+		margin-top:310px;
+		margin-left:-35px;
+		width:110px;
+	}
+	#scbutton{
+		margin-top:310px;
+		margin-left:10px;
+		width:90px;
+	}
+	#turnbutton{
+		width:60px;
+		margin-top:313.5px;
+		margin-left:10px;
+		height:20px;
+	}
+	
+	/*#calledfuncs{
+		position:absolute;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:5%;
+		margin-left:60%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		width:20%; 
+		height:200px;
+	}*/
+	.numbers{
+		position:relative;
+		padding-top:1%;
+		padding-bottom:1%;
+		float:left;
+		margin-top:-13.5%;
+		overflow:hidden;
+		border: 1.5px solid #344152;
+		background-color:#15191c;
+		width:20px;
+		height:400px;
+		color:#ede4d2;
+	}
+	.olnumbers{
+		padding:0px;
+		text-align:center;
+		margin-top:0px;
+	}
+	form{
+		display:inline;
+	}
+	
+	#save{
+		border: 1.5px solid #344152;
+		font-size:16px;
+		background-color:#15191c;
+		color:#dbb36b;
+	}
+	.views{
+		float:left;
+		position:absolute;
+		margin-left:20px;
+		left:0;
+		width:28px;
+		height:20px;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		text-align:center;
+	}
+	.zoom{
+		margin-top:20px;
+		margin-left:12.5%;
+	}
+	#front{
+		margin-top:120px;
+		padding-top:6px;
+		padding-bottom:3px;
+		padding-right:4px;
+		padding-left:4px;
+		width:50px;
+		font-variant:small-caps;
+	}
+	#back{
+		width:50px;
+		margin-top:180px;
+		padding-top:6px;
+		padding-bottom:3px;
+		padding-right:4px;
+		padding-left:4px;
+		font-variant:small-caps;
+	}
+	.unzoom{
+		margin-top:60px;
+		margin-left:12.5%;
+	}
+	
+	.weight{
+		display: inline-block;
+		letter-spacing:2px;
+		position:absolute;
+		padding:.5%;
+		width:auto;
+		margin-left:80px;
+		margin-top:-18.5px;
+	}
+	.hook{
+		display: inline;
+		letter-spacing:2px;
+		position:absolute;
+		padding:.5%;
+		width:auto;
+		margin-left:2%;
+		margin-top:-.5px;
+	}
+	.weightlabel{
+		float:left;
+		color:#ede4d2;
+		margin-top:10px;
+		font-family: 'Neucha', cursive;
+	}
+	
+	.hooklabel{
+		color:#ede4d2;
+		font-family: 'Neucha', cursive;
+	}
+	.weightfieldset{
+		display: inline-block;
+		position:relative;
+		margin-top:0px;
+		border:none;
+		width:200px;
+		float:left;
+	}
+	.hookfieldset{
+		display: inline-block;
+		position:relative;
+		margin-top:-10px;
+		border:none;
+		width:200px;
+	}
+	.cmmeasurements{
+		font-family: 'Neucha', cursive;
+		letter-spacing:.75px;
+		font-size:14px;
+		margin-left:10px;
+	}
+	.widthtext{
+		margin-top:100px;
+		
+	}
+	.heighttext{
+		margin-top:-10px;
+	}
+</style>
+</head>
+<body onload="start()">
+	<div id="title">String</div>
+	<div id="menubar">
+		<p class="menubaritems" id="helplink">help</p>
+		<a class="menubaritems" id="stringlink" href="index.html" >String it!</a>
+		<a class="menubaritems" id="exampleslink" href="examples.html">Examples</a>
+	</div>
+	<div class="uparrowdiv">
+		<div id="helpcontent">THIS IS THE HELP CONTENT</div>
+	</div>
+	<br>
+	<div style="margin-left:10%;margin-top:5%;">
+		<fieldset class="weightfieldset" id="weightfieldset1">
+			<form>
+				<label class="weightlabel" id="weightlabel1">Yarn Weight: <select name="weight" id="weight1" class="button weight">
+						<option id="oneply1" value="oneply1">1 ply</option>
+						<option id="twoply1" value="twoply1">2 ply</option>
+						<option id="threeply1" value="threeply1">3 ply</option>
+						<option id="fourply1" value="fourply1" selected>4 ply</option>
+						<option id="fiveply1" value="fiveply1">5 ply</option>
+						<option id="eightply1" value="eightply1">8 ply</option>
+						<option id="tenply1" value="tenply1">10 ply</option>
+						<option id="twelveply1" value="twelveply1">12 ply</option>
+						<option id="superbulky1" value="superbulky1">Super Bulky</option>
+					</select>
+				</label>
+			</form>
+		</fieldset>
+		<br>
+		<fieldset class="hookfieldset" id="hookfieldset1">
+			<form>
+				<label class="hooklabel" id="weightlabel1">Hook Size: <select name="hook" class="button hook" id="hook1">
+					<option id="lessthan4mm1" value="lessthan4mm1">Less than 4mm</option>
+					<option id="gfourmm1" value="gfourmm1">G - 4mm</option>
+					<option id="four.fivemm1" value="four.fivemm1">4.5mm</option>
+					<option id="four.fivemm1" value="four.fivemm1">H - 5mm</option>
+					<option id="ifive.fivemm1" value="ifive.fivemm1">I - 5.5mm</option>
+					<option id="jsixmm1" value="jsixmm1" selected>J - 6mm</option>
+					<option id="ksix.fivemm1" value="ksix.fivemm1">K - 6.5mm</option>
+					<option id="leightmm1" value="leightmm1">L - 8mm</option>
+					<option id="m-nninemm1" value="m-nninemm1">M/N - 9mm</option>
+					<option id="n-ptenmm1" value="n-ptenmm1">N/P - 10mm</option>
+					<option id="overtenmm1" value="overtenmm1">Over 10mm</option>
+				</select>
+				</label>
+			</form>
+		</fieldset>
+		<!--<input type="button" id="save" value="Save!">-->
+		<br>
+		<canvas class="canvas" id="canvas1" style="display:none;"></canvas>
+		<div class="views zoom" id="zoom1">+</div>
+		<!--<div class="views" id="front">Front</div>
+		<div class="views" id="back">Back</div>-->
+		<div class="views unzoom" id="unzoom1">-</div>
+		<p class="cmmeasurements widthtext" id="widthtext1"></p>
+		<p class="cmmeasurements heighttext" id="heighttext1"></p>
+		<!--<input type="button"  class="zooms" id="zoom" value="+">
+		<input type="button" class="zooms" id="unzoom" value="-">-->
+		<div class="container" id="container1"></div>
+		<div class="numbers" id="numbers1"><ol class="olnumbers" id="olnumbers1"></ol></div>
+		<textarea class="textarea" id="textarea1" spellcheck=false></textarea>
+	</div>
+	<!--<div id="calledfuncs"></div>-->
+	<!--<div class="button" id="chainbutton">chain<input id="numberofchains"type="text"></div>
+	<div class="button" id="scbutton">sc<input id="numberofscs"type="text"></div>
+	<div class="button" id="turnbutton">turn!</div>
+	-->
+</body>
+</html>

@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>String</title>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<!--link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>-->
+<!--<link href='http://fonts.googleapis.com/css?family=Port+Lligat+Slab' rel='stylesheet' type='text/css'>-->
+<link href='http://fonts.googleapis.com/css?family=Neucha' rel='stylesheet' type='text/css'>
+<script src="canvg.js"></script>
+<!--<link href="http://select-box.googlecode.com/svn/tags/0.2/jquery.selectbox.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://select-box.googlecode.com/svn/tags/0.2/jquery.selectbox-0.2.min.js"></script>-->
+<!--<script src="https://github.com/jweir/colorwheel.git"></script>-->
+<script type="text/javascript">
+function start() { 
+    var paper = Raphael(document.getElementById('container'), "100%", "100%");  //creates the canvas. 100% of 50% of window size
+    paper.setViewBox(0,0,200,200);
+	var widthmeasurement = "inch";
+	var heightmeasurement = "inch";
+	
+	var paragraphheight = $("#textarea").height();
+			var numberoflines = paragraphheight/16;
+				for (k=1;k<numberoflines+1;k++){
+					$("#olnumbers").append("<li>"+k+"</li>");
+				};
+	var help = "hidden";
+	var xpos = 200;
+	var xposoriginal = xpos;
+	var ypos = 300;
+	var yposoriginal = ypos;
+	var patternwidth = 0;
+	
+	
+	
+	$("#helplink").click(
+		function(){
+			helpdisplay();
+		}
+	);
+	
+	function helpdisplay(){
+			if (help=="hidden"){
+				$(".uparrowdiv").slideDown();
+				$(".uparrowdiv").show();
+				//$("#helpcontent").slideDown();
+				help="shown";
+			}
+			else if (help=="shown"){
+				//$(".uparrowdiv").slideDown();
+				$(".uparrowdiv").slideUp();
+				$(".uparrowdiv").hide();
+				help="hidden";
+			}
+	}
+	var xposrowbegin = xpos;
+	var prevxposrowbegin = 0;
+	//var xposrowend = 0;
+	
+	var yposrowbegin = ypos;
+	var prevyposrowbegin = 0;
+	//var yposrowend = 0;
+	
+	var zoomamount = 0;
+	
+	
+	var rows = 0;
+	var rowbeginstitch = 0;
+	var rowtotal = 0;
+	var width = 14.2857143;
+	var height = 5;
+	var chaintop = 0;
+	var direction = 1;
+	var topchains=[];
+	var chainbottom = 0;
+	var bottomchains=[];
+	var laststitch = "none";
+	var justturned = "false";
+	var currshade = "#f00";
+	
+	
+	
+	function chain(chainnumb){
+		
+			if (laststitch!=="chains"){
+				ypos=ypos-18;
+				if (laststitch=="dcs"){
+					ypos=ypos-18;
+				}
+				if (laststitch=="tcs"){
+					ypos=ypos-33;
+				}
+			}
+			
+			
+		for(i=0; i<chainnumb; i++){
+			if (justturned=="true"){
+				rowbeginstitch = "chain";
+				prevxposrowbegin = xposrowbegin;
+				prevyposrowbegin = yposrowbegin;
+				xposrowbegin = xpos;
+				yposrowbegin = ypos;
+				rowtotal = 0;
+			}
+			
+			chainbottom = paper.ellipse(xpos, ypos, width, height);
+			chainbottom.transform("r"+direction*"25"+"t"+direction*"4"+",11");
+			if (laststitch!=="chains"){
+				if (justturned=="false"){
+					chainbottom.toFront();
+				}
+			}
+			else{chainbottom.toBack();}
+			chainbottom.attr({fill: currshade});
+			bottomchains.push(chainbottom);
+			if (rows==0){
+				chaintop = paper.ellipse(xpos, ypos, width, height);
+				chaintop.transform("r"+direction*"-25");
+				chaintop.attr({fill: currshade});
+				if (laststitch!=="chains"){
+					if (justturned=="false"){
+						chaintop.toFront();
+					}
+				}
+				else{chaintop.toBack();}
+				topchains.push(chaintop)
+			}
+			
+			rowtotal=rowtotal+1;
+			xpos = xpos+(direction*17);
+			laststitch="chains";
+			justturned = "false";
+		}
+		patternwidth=chainnumb*.676666666666666667;
+		if (widthmeasurement=="cm"){
+			$("#widthtext").html("width: "+Math.round(patternwidth* 100) / 100+" cm");
+			//widthtext=paper.text(xposoriginal+30,yposoriginal+25,"width: "+Math.round(patternwidth * 100) / 100+" cm");
+		}
+		else if (widthmeasurement=="inch"){
+			$("#widthtext").html("width: "+Math.round((patternwidth*0.393700787402)*100) / 100+" inches");
+			//widthtext=paper.text(xposoriginal+30,yposoriginal+25,"width: "+Math.round(patternwidth * 100) / 100+" cm");
+		}
+		patternheight=patternheight+.7;
+		if (heightmeasurement=="cm"){
+			$("#heighttext").html("height: "+Math.round(patternheight* 100) / 100+" cm");
+		}
+		else if (heightmeasurement=="inch"){
+			$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	function turn(){
+		/*x=document.getElementById('calledfuncs');
+		x.innerHTML=x.innerHTML+"turn."+"<br>";*/
+		/*reset numbers on the side
+			$("#ulnumbers").html('');
+			for (i=1;i<numberoflines+1;i++){
+				$("#ulnumbers").append("<li>"+i+"</li>");
+			}*/
+			
+		rowtotal = 0;
+		if (laststitch==="chains"){
+			ypos=ypos;
+		}
+		if (laststitch==="scs"){
+			ypos=ypos-20;
+		}
+		if (laststitch==="hdcs"){
+			ypos=ypos-23;
+		}
+		if (laststitch==="dcs"){
+			ypos=ypos-41;
+		}
+		if (laststitch==="tcs"){
+			ypos=ypos-56;
+		}
+		//xposrowend=xpos;
+		//yposrowend=ypos;
+		xpos = xpos-(direction*17);
+		direction = -1*direction;
+		justturned = "true";
+		rows = rows+1;
+	}
+	var scchain1 = 0;
+	var scchain2 = 0;
+	var scupperchains = [];
+	var sclowerchains = [];
+	var leftsclist=[];
+	var rightsclist=[];
+	var scleft = 0;
+	var scright = 0;
+	function sc(scnumb){
+		if (justturned == "false"){
+			if ((laststitch!=="scs")&&(laststitch !== "chains")){
+				ypos=ypos+7;
+			}
+			if (laststitch=="chains"){
+				ypos=prevyposrowbegin-18;
+			}
+		}
+		if (justturned == "true"){
+			if (laststitch==="scs"){
+				ypos=ypos+3;
+			}
+			if (laststitch==="hdcs"){
+				ypos=ypos+3;
+			}
+			if (laststitch==="dcs"){
+				ypos=ypos+3;
+			}
+			if (laststitch==="tcs"){
+				ypos=ypos+3;
+			}
+		}
+		
+		for(i=0; i<scnumb; i++){
+			if (justturned=="true"){
+				rowbeginstitch = "sc";
+				rowtotal = 0;
+				prevxposrowbegin = xposrowbegin;
+				prevyposrowbegin = yposrowbegin;
+				xposrowbegin = xpos;
+				yposrowbegin= ypos;
+			}
+			scleft = paper.ellipse(xpos+4, ypos, width-7.8, height);
+			scleft.transform("r"+direction*"-60");
+			scleft.attr({fill: currshade});
+			leftsclist.push(scleft);
+			
+			scright = paper.ellipse(xpos-4, ypos, width-7.8, height);
+			scright.transform("r"+direction*"-120");
+			scright.attr({fill: currshade});
+			rightsclist.push(scright);
+			
+			scchain1 = paper.ellipse(xpos, ypos-6.2, width, height-.5);
+			scchain1.transform("r"+direction*"25");
+			scchain1.attr({fill: currshade});
+			sclowerchains.push(scchain1);
+			
+			/*scchain2 = paper.ellipse(xpos, ypos-16.2, width, height-.5);
+			scchain2.transform("r"+direction*"-25");
+			scchain2.attr({fill: currshade});
+			scchain2.toBack();
+			scupperchains.push(scchain2);*/
+
+			xpos = xpos+(direction*17);
+			rowtotal=rowtotal+1;
+			laststitch="scs";
+			justturned = "false";
+			
+		}
+		patternheight=patternheight+.85-.35;
+		if (heightmeasurement=="cm"){
+			$("#heighttext").html("height: "+Math.round(patternheight* 100) / 100+" cm");
+		}
+		else if (heightmeasurement=="inch"){
+			$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	var hdcchain1 = 0;
+	var hdcchain2 = 0;
+	var hdcupperchains = [];
+	var hdclowerchains = [];
+	var lefthdclist=[];
+	var righthdclist=[];
+	var hdcleft = 0;
+	var hdcright = 0;
+	function hdc(hdcnumb){
+		if (justturned == "true"){
+			if (laststitch=="chains"){
+				ypos=ypos-7;
+			}
+		}
+		
+		if (justturned == "false"){
+			if (laststitch=="chains"){
+				ypos=prevyposrowbegin-23;
+			}
+			if (laststitch=="scs"){
+				ypos=ypos-7;
+			}
+		}
+		
+		
+		
+		for(i=0; i<hdcnumb; i++){
+			if (justturned=="true"){
+				rowbeginstitch = "hdc";
+				rowtotal = 0;
+				prevxposrowbegin = xposrowbegin;
+				prevyposrowbegin = yposrowbegin;
+				xposrowbegin = xpos;
+				yposrowbegin= ypos;
+			}
+			hdcleft = paper.ellipse(xpos+4, ypos, width-2, height);
+			hdcleft.transform("r"+direction*"-60");
+			hdcleft.attr({fill:currshade});
+			lefthdclist.push(hdcleft);
+			
+			hdcright = paper.ellipse(xpos-4, ypos, width-2, height);
+			hdcright.transform("r"+direction*"-120");
+			hdcright.attr({fill: currshade});
+			righthdclist.push(hdcright);
+			
+			hdcchain1 = paper.ellipse(xpos, ypos-7, width, height);
+			hdcchain1.transform("r"+direction*"25");
+			hdcchain1.attr({fill: currshade});
+			hdclowerchains.push(hdcchain1);
+			
+			/*hdcchain2 = paper.ellipse(xpos, ypos-7, width, height);
+			hdcchain2.transform("r"+direction*"-25");
+			hdcchain2.attr({fill: "#f00"});
+			hdcchain2.toBack();
+			hdcupperchains.push(hdcchain2);*/
+
+			xpos = xpos+(direction*17);
+			rowtotal=rowtotal+1;
+			laststitch="hdcs";
+			justturned = "false";
+			
+		}
+		patternheight=patternheight+.95-.35;
+		if (heightmeasurement=="cm"){
+			$("#heighttext").html("height: "+Math.round(patternheight* 100) / 100+" cm");
+		}
+		else if (heightmeasurement=="inch"){
+			$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100)/ 100+" inches");
+		}
+
+	}
+	
+	var dcchain1 = 0;
+	var dcchain2 = 0;
+	var dcchain3back = 0;
+	var dcupperchains = [];
+	var dclowerchains = [];
+	var leftdclist1=[];
+	var rightdclist1=[];
+	var leftdclist2=[];
+	var rightdclist2=[];
+	var dcleft1 = 0;
+	var dcright1 = 0;
+	var dcleft2 = 0;
+	var dcright2 = 0;
+	function dc(dcnumb){
+		if (justturned == "true"){
+			if(laststitch=="chains"){
+				ypos=ypos-7;
+			}
+		}
+		if (justturned == "false"){
+			if (laststitch=="chains"){
+				ypos=prevyposrowbegin-23;
+			}
+			if (laststitch=="scs"){
+				ypos=ypos-7;
+			}
+		}
+		
+		for(i=0; i<dcnumb; i++){
+			if (justturned=="true"){
+				rowbeginstitch = "dc";
+				rowtotal = 0;
+				prevxposrowbegin = xposrowbegin;
+				prevyposrowbegin = yposrowbegin;
+				xposrowbegin = xpos;
+				yposrowbegin = ypos;
+			}
+			dcleft1 = paper.ellipse(xpos+4, ypos, 1.25*(width-4), height);
+			dcleft1.transform("r-60");
+			dcleft1.attr({fill: currshade});
+			leftdclist1.push(dcleft1);
+			
+			dcright1 = paper.ellipse(xpos-4, ypos, 1.25*(width-4), height);
+			dcright1.transform("r-120");
+			dcright1.attr({fill: currshade});
+			rightdclist1.push(dcright1);
+			
+			dcleft2 = paper.ellipse(xpos+4, ypos-15, 1.25*(width-4), height);
+			dcleft2.transform("r-60");
+			dcleft2.attr({fill: currshade});
+			leftdclist2.push(dcleft2);
+			
+			dcright2 = paper.ellipse(xpos-4, ypos-15, 1.25*(width-4), height);
+			dcright2.transform("r-120");
+			dcright2.attr({fill: currshade});
+			rightdclist2.push(dcright2);
+			
+			dcchain1 = paper.ellipse(xpos, ypos-25, width, height);
+			dcchain1.transform("r"+direction*"25");
+			dcchain1.attr({fill: currshade});
+			dcchain1.toFront();
+			dclowerchains.push(dcchain1);
+			
+			/*dcchain2 = paper.ellipse(xpos, ypos-35, width, height);
+			dcchain2.transform("r"+direction*"-25");
+			dcchain2.attr({fill: currshade});
+			dcchain2.toBack();
+			dcupperchains.push(dcchain2);*/
+
+			xpos = xpos+(direction*17);
+			rowtotal=rowtotal+1;
+			laststitch="dcs";
+			justturned = "false";
+		}
+		patternheight=patternheight+1.35-.35;
+		if (heightmeasurement=="cm"){
+			$("#heighttext").html("height: "+Math.round(patternheight* 100) / 100+" cm");
+		}
+		else if (heightmeasurement=="inch"){
+			$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	var tcchain1 = 0;
+	var tcchain2 = 0;
+	var tcupperchains = [];
+	var tclowerchains = [];
+	var lefttclist1=[];
+	var righttclist1=[];
+	var lefttclist2=[];
+	var righttclist2=[];
+	var lefttclist3=[];
+	var righttclist3=[];
+	var tcleft1 = 0;
+	var tcright1 = 0;
+	var tcleft2 = 0;
+	var tcright2 = 0;
+	var tcleft3 = 0;
+	var tcright3 = 0;
+	function tc(tcnumb){
+		if (justturned == "true"){
+			if(laststitch=="chains"){
+			ypos=ypos-7;
+			}
+		}
+		if (justturned == "false"){
+			if (laststitch=="chains"){
+				ypos=ypos+51;
+				ypos=prevyposrowbegin-23;
+			}
+			if (laststitch=="scs"){
+				ypos=ypos-7.5;
+			}
+		}
+		
+		for(i=0; i<tcnumb; i++){
+			if (justturned=="true"){
+				rowbeginstitch = "tc";
+				rowtotal = 0;
+				prevxposrowbegin = xposrowbegin;
+				prevyposrowbegin = yposrowbegin;
+				xposrowbegin = xpos;
+				yposrowbegin = ypos;
+			}
+			tcleft1 = paper.ellipse(xpos+4, ypos, 1.25*(width-4), height);
+			tcleft1.transform("r-60");
+			tcleft1.attr({fill: currshade});
+			lefttclist1.push(tcleft1);
+			
+			tcright1 = paper.ellipse(xpos-4, ypos, 1.25*(width-4), height);
+			tcright1.transform("r-120");
+			tcright1.attr({fill: currshade});
+			righttclist1.push(tcright1);
+			
+			tcleft2 = paper.ellipse(xpos+4, ypos-15, 1.25*(width-4), height);
+			tcleft2.transform("r-60");
+			tcleft2.attr({fill: currshade});
+			lefttclist2.push(tcleft2);
+			
+			tcright2 = paper.ellipse(xpos-4, ypos-15, 1.25*(width-4), height);
+			tcright2.transform("r-120");
+			tcright2.attr({fill: currshade});
+			righttclist2.push(tcright2);
+			
+			tcleft3 = paper.ellipse(xpos+4, ypos-30, 1.25*(width-4), height);
+			tcleft3.transform("r-60");
+			tcleft3.attr({fill: currshade});
+			lefttclist3.push(tcleft3);
+			
+			tcright3 = paper.ellipse(xpos-4, ypos-30, 1.25*(width-4), height);
+			tcright3.transform("r-120");
+			tcright3.attr({fill: currshade});
+			righttclist3.push(tcright3);
+			
+			tcchain1 = paper.ellipse(xpos, ypos-40, width, height);
+			tcchain1.transform("r"+direction*"25");
+			tcchain1.attr({fill: currshade});
+			tcchain1.toFront();
+			tclowerchains.push(tcchain1);
+			
+			/*tcchain2 = paper.ellipse(xpos, ypos-50, width, height);
+			tcchain2.transform("r"+direction*"-25");
+			tcchain2.attr({fill: currshade});
+			tcchain2.toBack();
+			tcupperchains.push(tcchain2);*/
+
+			xpos = xpos+(direction*17);
+			rowtotal=rowtotal+1;
+			laststitch="tcs";
+			justturned = "false";
+		}
+		patternheight=patternheight+2.05-.35;
+		if (heightmeasurement=="cm"){
+			$("#heighttext").html("height: "+Math.round(patternheight* 100) / 100+" cm");
+		}
+		else if (heightmeasurement=="inch"){
+			$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100)/ 100+" inches");
+		}
+	}
+	
+	/*
+	var buttonforchains = document.getElementById('numberofchains');
+	buttonforchains.onblur=function(){
+			chain($("#numberofchains").val());
+		};
+		
+	var buttonforturns = document.getElementById('turnbutton');
+	buttonforturns.onclick=function(){
+			turn();
+		}
+		
+	var buttonforscs = document.getElementById('numberofscs');
+	buttonforscs.onblur=function(){
+			sc($("#numberofscs").val());
+		}
+	*/
+	function color(colortype){
+		currshade=colortype;
+	
+	}
+	var input = 0;
+	var splitintofunctions = 0;
+	var splitintoelements = 0;
+	var argchars = 0;
+	var argstring = 0;
+	var argnumb = 0;
+	var iofpar = 0;
+	var funcname = 0;
+	$("#textarea").keypress(
+		function(){
+			//alert(patternheight);
+			//widthtext = paper.text(xposoriginal+20, yposoriginal+60, patternwidth+" inches");
+			//heighttext = paper.text(xposoriginal+30,yposoriginal+35,"");
+			processinput();
+		}
+	);
+	$("#textarea").change(
+		function(){
+			//alert(patternheight);
+			//heighttext = paper.text(xposoriginal+30,yposoriginal+35,"");
+			processinput();
+		}
+	);
+		function processinput(){
+			xpos = xposoriginal;
+			ypos = yposoriginal;
+			patternheight=0;
+			//widthtext = paper.text(xposoriginal+20, yposoriginal+60, patternwidth+" inches");
+			$('#converted_image').attr('src', ""); //resets the image source
+			paragraphheight = $("#textarea").height();
+			if (paragraphheight/16>numberoflines){
+				$("#olnumbers").html("");
+				numberoflines = paragraphheight/16;
+				for (k=1;k<numberoflines+1;k++){
+					$("#olnumbers").append("<li>"+k+"</li>");
+				};
+			}
+		
+			var scrtextarea = $("#textarea").scrollTop();
+			$("#numbers").scrollTop(scrtextarea);
+			paper.clear();//redraw every time
+			input = $("#textarea").val();
+			input=input.replace(/\s+/g, '');
+			splitintofunctions = input.split(";");
+			
+			if (splitintofunctions.length>60){
+				ypos = splitintofunctions.length*9;
+			}
+			rowtotal = 0;
+			rows = 0;
+			currshade = "#f00";
+			for (h=0;h<splitintofunctions.length;h++){ 
+				
+				splitintoelements=splitintofunctions[h].split("(");
+				var lowercase=(splitintoelements[0]).toLowerCase();
+				
+				argchars = splitintoelements[1];
+				iofpar = argchars.indexOf(")");
+				argstring = argchars.slice(0,iofpar);
+				argnumb=Number(argstring);
+				if ((lowercase=="chain")||(lowercase=="c")){
+					chain(argnumb);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if (lowercase=="turn"){
+					turn();
+				}
+				
+				//US terms
+				else if ((lowercase=="sc")||(lowercase=="single")||(lowercase=="singlec")){
+					sc(argnumb);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase=="hdc")||(lowercase=="halfdouble")||(lowercase=="halfdoublec")){
+					hdc(argnumb);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				
+				else if ((lowercase=="dc")||(lowercase=="double")||(lowercase=="doublec")){
+					dc(argnumb);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase=="tc")||(lowercase=="triple")||(lowercase=="triplec")){
+					tc(argnumb);
+					//heighttext = paper.text(xposoriginal+30,yposoriginal+40, "height: " + Math.round(patternheight * 100) / 100+" cm");
+				}
+				else if ((lowercase=="tr")||(lowercase=="trc")||(lowercase=="treble")||(lowercase=="treblec")){
+					tc(argnumb);
+				}
+				
+				//uk terms
+				else if ((lowercase=="uk-dc")||(lowercase=="uk-double")||(lowercase=="uk-doublec")){
+					sc(argnumb);
+				}
+				else if ((lowercase=="ukdc")||(lowercase=="ukdouble")||(lowercase=="ukdoublec")){
+					sc(argnumb);
+				}
+				
+				
+				else if ((lowercase=="uk-htr")||(lowercase=="uk-halftreble")||(lowercase=="uk-halftreblec")){
+					hdc(argnumb);
+				}
+				else if ((lowercase=="ukhtr")||(lowercase=="ukhalftreble")||(lowercase=="ukhalftreblec")){
+					hdc(argnumb);
+				}
+				
+				
+				else if ((lowercase=="uk-tr")||(lowercase=="uk-trc")||(lowercase=="uk-treble")||(lowercase=="uk-treblec")){
+					dc(argnumb);
+				}
+				else if ((lowercase=="uktr")||(lowercase=="uktrc")||(lowercase=="uktreble")||(lowercase=="uktreblec")){
+					dc(argnumb);
+				}
+
+
+				else if ((lowercase=="uk-dtr")||(lowercase=="uk-dbltr")||(lowercase=="uk-doubletreble")||(lowercase=="uk-doubletr")||(lowercase=="uk-doubletreblec")){
+					tc(argnumb);
+				}
+				else if ((lowercase=="ukdtr")||(lowercase=="ukdbltr")||(lowercase=="ukdoubletreble")||(lowercase=="ukdoubletr")||(lowercase=="ukdoubletreblec")){
+					tc(argnumb);
+				}
+				else if (lowercase=="color"){ //without "else", the whole color changes. With else, it only changes from that moment on.
+					color(argstring);
+				}
+			}
+			//adds the canvas contents to the hidden image.
+			canvg('canvas', $("#container").html());
+			// the canvas calls to output a png
+			var canvas = document.getElementById("canvas");
+			var img = canvas.toDataURL("image/png");
+			$('#converted_image').attr('src', img);
+		}
+	
+	$("#widthtext").click(
+		function(){
+			if (widthmeasurement == "cm"){
+				widthmeasurement = "inch";
+				$("#widthtext").html("width: "+Math.round((patternwidth*0.393700787402)*100) / 100+" inches");
+			}
+			else if (widthmeasurement == "inch"){
+				widthmeasurement = "cm";
+				$("#widthtext").html("width: "+Math.round(patternwidth*100) / 100+" cm");
+				
+			}
+		}
+	);
+	$("#heighttext").click(
+		function(){
+			if (heightmeasurement == "cm"){
+				heightmeasurement = "inch";
+				$("#heighttext").html("height: "+Math.round((patternheight*0.393700787402)*100) / 100+" inches");
+			}
+			else if (heightmeasurement == "inch"){
+				heightmeasurement = "cm";
+				$("#heighttext").html("height: "+Math.round(patternheight*100) / 100+" cm");
+			}
+		}
+	);
+	if (widthmeasurement=="cm"){
+		$("#widthtext").html("width: "+patternwidth+" cm");
+	}
+	else if (widthmeasurement=="inch"){
+		$("#widthtext").html("width: "+patternwidth*0.393700787402+" inches");
+	}
+	var patternheight = 0;
+	if (heightmeasurement=="cm"){
+		$("#heighttext").html("height: "+patternheight+" cm");
+	}
+	else if (heightmeasurement=="inch"){
+		$("#heighttext").html("height: "+patternheight*0.393700787402+" inches");
+	}
+	
+	$("#zoom").click(
+		function(){
+			if ((zoomamount>=-1)&&(zoomamount<1)){
+				zoomamount = zoomamount+1;
+				alert(zoomamount);
+			}
+		}
+	);
+	
+	$("#unzoom").click(
+		function unzoom(){
+			if ((zoomamount>-1)&&(zoomamount<=1)){
+				zoomamount = zoomamount-1;
+				alert(zoomamount);
+			}
+		}
+	);	
+	if (zoomamount==0){
+		paper.setViewBox(0,0,650,650,false);
+	}
+	if (zoomamount==1){
+		paper.setViewBox(xpos-200,xpos-200,400,400,false);
+	}
+	/*if (zoomamount==2){
+		paper.setViewBox(xpos-75,ypos-75,150,150,false);
+	}
+	
+	*/if (zoomamount==-1){
+		paper.setViewBox(xpos-450,xpos-450,900,900,false);
+	}
+	/*if (zoomamount==-2){
+		paper.setViewBox(0,0,1150,1150,false);
+	}*/
+
+		/*$("#save").click(function() {
+
+		canvg('canvas', $("#container").html());
+
+		// the canvas calls to output a png
+		var canvas = document.getElementById("canvas");
+		var img = canvas.toDataURL("image/png");
+		// do what you want with the base64, write to screen, post to server, etc...
+		});	*/
+}
+</script>
+<style>
+
+	body{
+		background-color:#dfcead;
+		padding:0;
+		
+		
+	}
+	#title{
+		width:100%;
+		text-align:center;
+		margin-top:-.5%;
+		margin-left:-.5%;
+		padding-top:12px;
+		padding-bottom:5px;
+		padding-right:1%;
+		background-color:#90a798;
+		color:#415167;
+		font-size:46px;
+		font-style: bold;
+		font-family: 'Neucha', cursive;
+	}
+	
+	#menubar{
+		border-top:5px solid #ede4d2;
+		font-family: 'Neucha', cursive;
+		background-color:#572a1f;
+		margin-left:-.5%;
+		padding-right:1%;
+		width:100%;
+		height:40px;
+	}
+	#container{
+		float:left;
+		width:52%;
+		height:1000px;
+		margin-left:8%;
+		margin-top:-23%;
+	}
+	
+	#textarea{
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:2px;
+		border: 1.5px solid #344152;
+		padding:1%;
+		margin-top:-23%;
+		color:midnightblue;
+		font-size:16px;
+		background-color:white;
+		width:30%; 
+		height:400px;
+		z-index:2;
+	}
+	#textarea::-webkit-input-placeholder {
+		color: #e8cfa2;
+	}
+	#textarea:-moz-placeholder {
+		color: #e8cfa2;
+	}
+	#textarea:-ms-input-placeholder { /* IE10+ */
+		color: #e8cfa2;
+	}
+	.menubaritems{
+		font-family: 'Neucha', cursive;
+		color:#dbb36b;
+		font-size:18px;
+		width:auto;
+		position:absolute;
+		height:30px;
+		padding-top:10px;
+		padding-left:.9%;
+		padding-right:.9%;
+	}
+
+	a:link {text-decoration:none;}
+	a:visited {text-decoration:none;}
+	a:hover {text-decoration:none;}
+	a:active {text-decoration:none;}
+	
+	#helplink{
+		margin-left:94.2%;
+		margin-top:-.000005%;
+	}
+	
+	#stringlink{
+		margin-left:30px;
+		color:#dbb36b;
+		background-color:#703628;
+	}
+	
+	#documentationlink{
+	color:#dbb36b;
+		margin-left:115px;
+	}
+	
+	#exampleslink{
+		margin-left:17%;
+	}
+	
+	/*#helpcontent{
+		position:absolute;
+		font-family: 'Neucha', cursive;
+		background-color: #CDC5BF;
+		color:#2d3848;
+		margin-left:1%;
+		margin-top:1%;
+		width:15%;
+		height:300px;
+		display:none;
+		z-index:1;
+	}
+	*/
+	
+	.uparrowdiv{
+		float:right;
+		right:18px;
+		margin-top:10px;
+		width:275px;
+		padding-right:10px;
+		min-height:40px; /*min height of DIV should be set to at least 2x the width of the arrow*/
+		background: #CDC5BF;
+		font-family: 'Neucha', cursive;
+		color:#35355a;
+		padding:7px;
+		position:absolute;
+		word-wrap:break-word;
+		-moz-border-radius:5px; /*add some nice CSS3 round corners*/
+		-webkit-border-radius:5px;
+		border-radius:5px;
+		margin-bottom:2em;
+		z-index:1;
+		display:none;
+	}
+
+	.uparrowdiv:after{ /*arrow added to uparrowdiv DIV*/
+		content:'';
+		display:block;
+		position:absolute;
+		top:-20px; /*should be set to -border-width x 2 */
+		right:16px;
+		width:0;
+		height:0;
+		border-color: transparent transparent #CDC5BF transparent; /*border color should be same as div div background color*/
+		border-style: solid;
+		border-width: 10px;
+	}
+	
+	.button{
+		float:left;
+		height:auto;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:3%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#numberofchains{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	
+	#numberofscs{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#chainbutton{
+		margin-top:310px;
+		margin-left:-35px;
+		width:110px;
+	}
+	#scbutton{
+		margin-top:310px;
+		margin-left:10px;
+		width:90px;
+	}
+	#turnbutton{
+		width:60px;
+		margin-top:313.5px;
+		margin-left:10px;
+		height:20px;
+	}
+	
+	/*#calledfuncs{
+		position:absolute;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:5%;
+		margin-left:60%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		width:20%; 
+		height:200px;
+	}*/
+	#numbers{
+		position:relative;
+		padding-top:1%;
+		padding-bottom:1%;
+		float:left;
+		margin-top:-23%;
+		overflow:hidden;
+		border: 1.5px solid #344152;
+		background-color:white;
+		width:20px;
+		height:400px;
+		color:midnightblue;
+	}
+	#olnumbers{
+		padding:0px;
+		text-align:center;
+		margin-top:0px;
+	}
+	form{
+		display:inline;
+	}
+	
+	#save{
+		border: 1.5px solid #344152;
+		font-size:16px;
+		background-color:#15191c;
+		color:#dbb36b;
+	}
+	.views{
+		float:left;
+		position:absolute;
+		margin-left:20px;
+		left:0;
+		width:28px;
+		height:20px;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		text-align:center;
+	}
+	#zoom{
+		margin-top:20px;
+		margin-left:35px;
+	}
+	#front{
+		margin-top:120px;
+		padding-top:6px;
+		padding-bottom:3px;
+		padding-right:4px;
+		padding-left:4px;
+		width:50px;
+		font-variant:small-caps;
+	}
+	#back{
+		width:50px;
+		margin-top:180px;
+		padding-top:6px;
+		padding-bottom:3px;
+		padding-right:4px;
+		padding-left:4px;
+		font-variant:small-caps;
+	}
+	#unzoom{
+		margin-top:60px;
+		margin-left:35px;
+	}
+	
+	#weight{
+		display: inline-block;
+		letter-spacing:2px;
+		position:absolute;
+		padding:.5%;
+		width:100px;
+		margin-left:80px;
+		margin-top:-18.5px;
+	}
+	#hook{
+		display: inline;
+		letter-spacing:2px;
+		position:absolute;
+		padding:.5%;
+		width:100px;
+		margin-left:2%;
+		margin-top:-.5px;
+	}
+	#weightlabel{
+		float:left;
+		color:#ede4d2;
+		margin-top:10px;
+		font-family: 'Neucha', cursive;
+	}
+	
+	#hooklabel{
+		color:#ede4d2;
+		font-family: 'Neucha', cursive;
+	}
+	#weightfieldset{
+	display: inline-block;
+		position:relative;
+		margin-top:0px;
+		border:none;
+		width:200px;
+		float:left;
+	}
+	#hookfieldset{
+	display: inline-block;
+		position:relative;
+		margin-top:-10px;
+		border:none;
+		width:200px;
+	}
+	.cmmeasurements{
+		font-family: 'Neucha', cursive;
+		letter-spacing:.75px;
+		font-size:14px;
+		margin-left:10px;
+	}
+	#widthtext{
+		margin-top:235px;
+	}
+	#heighttext{
+		margin-top:-5px;
+	}
+	
+	#tips{
+		font-family: 'Neucha', cursive;
+		letter-spacing:1px;
+		font-style:bold;
+		text-align:center;
+		color:maroon;
+		font-size:20px;
+		margin-top:3px;
+		margin-bottom:5px;
+	}
+	.stringname{
+	font-family: 'Neucha', cursive;
+		font-variant:small-caps;
+		display:inline;
+		font-size:20px;
+	}
+	#stitchlist{
+	margin-top:3px;
+	color:#2f2f4f;
+	}
+	.header{
+		font-size:16px;
+		display:inline;
+		letter-spacing:.8px;
+	}
+	#syntaxdesc{
+		margin-left:30px;
+		margin-top:3px;
+	}
+	a:link {
+		text-decoration:none;
+		color:#35355a;
+	}
+	a:visited {
+		text-decoration:none;
+		color:#35355a;
+	}
+	a:hover {	
+		text-decoration:underline;
+	}
+	a:active {
+		text-decoration:none;
+		color:#35355a;
+	}
+</style>
+</head>
+<body onload="start()">
+	<div id="title">String</div>
+	<div id="menubar">
+		<p class="menubaritems" id="helplink">help</p>
+		<a class="menubaritems" id="stringlink" href="index.html" >String it!</a>	
+		<a class="menubaritems" id="documentationlink" href="documentation.html">Documentation</a>
+		<!--<a class="menubaritems" id="exampleslink" href="examples.html">Examples</a>-->
+	</div>
+	<div class="uparrowdiv">
+		<div id="helpcontent">
+			<p id="tips">Quick Tips:</p>
+			<div><p class="header" id="stitchheader">Things You Can <p class="stringname">string</p>:
+				<ul id="stitchlist">
+				<li>Chain</li>
+				<li>Turn</li>
+				<li>Single Crochet</li>
+				<li>Half Double Crochet</li>
+				<li>Double Crochet</li>
+				<li>Treble Crochet</li>
+				<li>Color</li>
+				</ul>
+			</div>
+			<div><p class="header" id="syntaxheader">The Syntax:</p>
+				<p id="syntaxdesc"> Stitch Name(#);</p>
+			</div>
+			For more, please refer to the <a href="documentation.html">documentation!</a>
+		</div>
+	</div>
+	<br>
+	<fieldset id="weightfieldset">
+		<form>
+			<label id="weightlabel">Yarn Weight: <select name="weight" class="button" id="weight">
+					<!--<option id="oneply" value="oneply">1 ply</option>
+					<option id="twoply" value="twoply">2 ply</option>
+					<option id="threeply" value="threeply">3 ply</option>-->
+					<option id="fourply" value="fourply" selected>4 ply</option>
+					<!--<option id="fiveply" value="fiveply">5 ply</option>
+					<option id="eightply" value="eightply">8 ply</option>
+					<option id="tenply" value="tenply">10 ply</option>
+					<option id="twelveply" value="twelveply">12 ply</option>
+					<option id="superbulky" value="superbulky">Super Bulky</option>-->
+				</select>
+			</label>
+		</form>
+	</fieldset>
+	<br>
+	<fieldset id="hookfieldset">
+		<form>
+			<label id="hooklabel">Hook Size: <select name="hook" class="button" id="hook">
+				<!--<option value="lessthan4mm">Less than 4mm</option>
+				<option value="gfourmm">G - 4mm</option>
+				<option value="four.fivemm">4.5mm</option>
+				<option value="hfivemm">H - 5mm</option>
+				<option value="ifive.fivemm">I - 5.5mm</option>-->
+				<option value="jsixmm" selected>J - 6mm</option>
+				<!--<option value="ksix.fivemm">K - 6.5mm</option>
+				<option value="leightmm">L - 8mm</option>
+				<option value="m-nninemm">M/N - 9mm</option>
+				<option value="n-ptenmm">N/P - 10mm</option>
+				<option value="overtenmm">Over 10mm</option>-->
+			</select>
+			</label>
+		</form>
+	</fieldset>
+	<!--<input type="button" id="save" value="Save!">-->
+	<br>
+	<canvas id="canvas" style="display:none;"></canvas>
+	<!--<div class="views" id="zoom">+</div>
+	<div class="views" id="front">Front</div>
+	<div class="views" id="back">Back</div>
+	<div class="views" id="unzoom">-</div>-->
+	<p class="cmmeasurements" id="widthtext"></p>
+	<p class="cmmeasurements" id="heighttext"></p>
+	<!--<input type="button"  class="zooms" id="zoom" value="+">
+	<input type="button" class="zooms" id="unzoom" value="-">-->
+	<div id="container"></div>
+	<div id="numbers"><ol id="olnumbers"></ol></div>
+	<textarea id="textarea" spellcheck=false></textarea>
+	<!--<div id="calledfuncs"></div>-->
+	<!--<div class="button" id="chainbutton">chain<input id="numberofchains"type="text"></div>
+	<div class="button" id="scbutton">sc<input id="numberofscs"type="text"></div>
+	<div class="button" id="turnbutton">turn!</div>
+	-->
+</body>
+</html>

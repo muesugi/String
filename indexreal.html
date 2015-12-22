@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Shap Design with Raphael</title>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<!--link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>-->
+<!--<link href='http://fonts.googleapis.com/css?family=Port+Lligat+Slab' rel='stylesheet' type='text/css'>-->
+<link href='http://fonts.googleapis.com/css?family=Neucha' rel='stylesheet' type='text/css'>
+<script src="canvg.js"></script>
+
+<script>
+ window.onload = function () { 
+   var paper = new Raphael(document.getElementById('container'), "100%", "100%");  //creates the canvas. 100% of 50% of window size
+	var circle = paper.ellipse(100,100,100,100); 
+	$("#save").click(function() {
+		canvg('canvas', $("#container").html());
+		// the canvas calls to output a png
+		var canvas = document.getElementById("canvas");
+		var img = canvas.toDataURL("image/png");
+		$('#converted_image').attr('src', img);
+		$('#converted_image').css('display', "inherit");
+		});	
+}
+	
+</script>
+<style>
+
+	body{
+		background-color:#77534e;
+		padding:0;
+		
+		
+	}
+	#title{
+		width:100%;
+		text-align:center;
+		margin-top:-.5%;
+		margin-left:-.5%;
+		padding-top:5px;
+		padding-bottom:5px;
+		padding-right:1%;
+		background-color:#90a798;
+		color:#415167;
+		font-size:46px;
+		font-style: bold;
+		font-family: 'Neucha', cursive;
+	}
+	
+	#menubar{
+		border-top:5px solid #ede4d2;
+		font-family: 'Neucha', cursive;
+		background-color:#572a1f;
+		margin-left:-.5%;
+		padding-right:1%;
+		width:100%;
+		height:40px;
+	}
+	#container{
+		float:left;
+		width:50%;
+		height:1000px;
+		z-index:1;
+	}
+	
+	#textarea{
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		padding:1%;
+		margin-top:-8%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		width:30%; 
+		height:400px;
+	}
+	#textarea::-webkit-input-placeholder {
+		color: #e8cfa2;
+	}
+	#textarea:-moz-placeholder {
+		color: #e8cfa2;
+	}
+	#textarea:-ms-input-placeholder { 
+		color: #e8cfa2;
+	}
+	
+	#helplink{
+		font-family: 'Neucha', cursive;
+		width:auto;
+		color:#dbb36b;
+		font-size:18px;
+		margin-left:2%;
+		margin-top:10px;
+	}
+	
+	#helpcontent{
+		position:absolute;
+		font-family: 'Neucha', cursive;
+		background-color: #CDC5BF;
+		color:#2d3848;
+		margin-left:1%;
+		margin-top:.25%;
+		width:15%;
+		height:300px;
+		display:none;
+		z-index:1;
+	}
+	.button{
+		float:left;
+		height:auto;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:3%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#numberofchains{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	
+	#numberofscs{
+		border: 1.5px solid #344152;
+		width:50px;
+		margin-left:10px;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+	}
+	#chainbutton{
+		margin-top:310px;
+		margin-left:-35px;
+		width:110px;
+	}
+	#scbutton{
+		margin-top:310px;
+		margin-left:10px;
+		width:90px;
+	}
+	#turnbutton{
+		width:60px;
+		margin-top:313.5px;
+		margin-left:10px;
+		height:20px;
+	}
+	
+	#calledfuncs{
+		position:absolute;
+		overflow:auto;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		margin-top:5%;
+		margin-left:60%;
+		padding:1%;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		width:20%; 
+		height:200px;
+	}
+	#numbers{
+		position:relative;
+		padding-top:1%;
+		padding-bottom:1%;
+		float:left;
+		margin-top:-8%;
+		overflow:hidden;
+		border: 1.5px solid #344152;
+		border-right:#15191c;
+		background-color:#15191c;
+		width:20px;
+		height:400px;
+		color:#ede4d2;
+	}
+	#olnumbers{
+		padding:0px;
+		text-align:center;
+		margin-top:0px;
+	}
+	form{
+		display:inline;
+	}
+	
+	.zooms{
+		float:left;
+		position:absolute;
+		margin-left:20px;
+		left:0;
+		width:28px;
+		height:20px;
+		font-family: 'Neucha', cursive;
+		letter-spacing:3px;
+		border: 1.5px solid #344152;
+		color:#dbb36b;
+		font-size:16px;
+		background-color:#15191c;
+		text-align:center;
+	}
+	#zoom{
+		margin-top:20px;
+		
+	}
+	#unzoom{
+		margin-top:60px;
+	}
+	
+	#weight{
+		letter-spacing:2px;
+		position:relative;
+		padding:.5%;
+		width:auto;
+		margin-left:1%;
+	}
+	#hook{
+		float:left;
+		display:inline;
+		letter-spacing:2px;
+		position:relative;
+		padding:.5%;
+		width:auto;
+		margin-left:1%;
+	}
+	#weightlabel{
+		float:left;
+		color:#ede4d2;
+		font-family: 'Neucha', cursive;
+	}
+	
+	#hooklabel{
+		color:#ede4d2;
+		font-family: 'Neucha', cursive;
+	}
+	
+</style>
+</head>
+<body>
+	<div id="title">String</div>
+	<div id="menubar"><p id="helplink">help</p></div>
+	<div id="helpcontent">THIS IS THE HELP CONTENT</div>
+	<br>
+	<fieldset style="display:inline;border:none;width:150px;">
+		<form>
+			<label id="weightlabel">Yarn Weight:<select name="weight" class="button" id="weight">
+					<option id="oneply" value="oneply">1 ply</option>
+					<option id="twoply" value="twoply">2 ply</option>
+					<option id="threeply" value="threeply">3 ply</option>
+					<option id="fourply" value="fourply" selected>4 ply</option>
+					<option id="fiveply" value="fiveply">5 ply</option>
+					<option id="eightply" value="eightply">8 ply</option>
+					<option id="tenply" value="tenply">10 ply</option>
+					<option id="twelveply" value="twelveply">12 ply</option>
+					<option id="superbulky" value="superbulky">Super Bulky</option>
+				</select>
+			</label>
+		</form>
+	</fieldset>
+	<br>
+	<fieldset style="display:inline;border:none;width:150px;">
+		<form>
+			<label for="hook" id="hooklabel">Hook Size:</label><select name="hook" class="button dropdown" id="hook">
+				<option value="lessthan4mm">Less than 4mm</option>
+				<option value="gfourmm">G - 4mm</option>
+				<option value="four.fivemm">4.5mm</option>
+				<option value="hfivemm">H - 5mm</option>
+				<option value="ifive.fivemm">I - 5.5mm</option>
+				<option value="jsixmm" selected>J - 6mm</option>
+				<option value="ksix.fivemm">K - 6.5mm</option>
+				<option value="leightmm">L - 8mm</option>
+				<option value="m-nninemm">M/N - 9mm</option>
+				<option value="n-ptenmm">N/P - 10mm</option>
+				<option value="overtenmm">Over 10mm</option>
+			</select>
+		</form>
+	</fieldset>
+	<form>
+	<input type="button" id="save" value="Save!">
+	</form>
+	<br>
+	<canvas id="canvas" style="display:none;"></canvas>
+	<img id="converted_image" src="" style="display:none;">
+	<div class="zooms" id="zoom">+</div>
+	<div class="zooms" id="unzoom">-</div>
+	<!--<input type="button"  class="zooms" id="zoom" value="+">
+	<input type="button" class="zooms" id="unzoom" value="-">-->
+	<div id="container"></div>
+	<div id="numbers"><ol id="olnumbers"></ol></div>
+	<textarea id="textarea" ></textarea>
+	<!--<div id="calledfuncs"></div>-->
+	<!--<div class="button" id="chainbutton">chain<input id="numberofchains"type="text"></div>
+	<div class="button" id="scbutton">sc<input id="numberofscs"type="text"></div>
+	<div class="button" id="turnbutton">turn!</div>
+	-->
+</body>
+</html>
